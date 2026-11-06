@@ -1,6 +1,6 @@
 # Reinstall guide
 
-Steps to rebuild this machine by hand after a fresh Windows 10 or 11 install. Updated 2026-10-09.
+Steps to rebuild this machine by hand after a fresh Windows 10 or 11 install. Updated 2026-11-06.
 
 Projects live in `C:\dev`, one folder per kind of project. The `dev` shell shortcut points to
 `C:\dev`. `install.ps1` creates the folders (step 4):
@@ -44,7 +44,7 @@ and waits for them to time out: every new site takes 7 to 15 s to start loading.
     (TCP/IPv4)" > "Use the following DNS server addresses": `1.1.1.1` and `1.0.0.1`. "Internet
     Protocol Version 6 (TCP/IPv6)" > "Obtain DNS server address automatically". OK on both.
 
-Step 8 checks that it worked.
+Step 7 checks that it worked.
 
 ## 1. Base tools
 
@@ -114,25 +114,24 @@ IosevkaTerm Nerd Font, the "Open with Code" Explorer menu and the Terminal-Icons
 installers ask for admin rights (UAC), accept them.
 
 **Close the window and open a new one** so `code`, `mise` and the rest are on PATH. Without this,
-`install.ps1` skips the VS Code extensions, the Ash theme and the mise tools.
+`install.ps1` skips the Ash theme and the mise tools.
 
 ```powershell
 Set-Location "C:\dev\config\dotfiles"
 pwsh ./windows/install.ps1
-git config core.hooksPath hooks
 ```
 
 `install.ps1` creates the `C:\dev` folders listed at the top, copies the configs into place (PowerShell profile, Starship, fastfetch, git, mise,
-Windows Terminal, VS Code settings), installs the VS Code extensions in
-`shared/vscode/extensions.txt`, adds mise's shims folder (`%LOCALAPPDATA%\mise\shims`) to the
+Windows Terminal, VS Code settings), adds mise's shims folder (`%LOCALAPPDATA%\mise\shims`) to the
 user PATH and runs `mise install` (node, java, python, pnpm, fzf), clones
 `ash-theme` (from the same GitHub owner as the dotfiles' `origin`) next to `dotfiles` and installs it into VS
-Code, turns off Docker Desktop's start with Windows, and patches Discord with Vencord. The last line enables the git hooks: pre-push checks for
+Code, turns off Docker Desktop's start with Windows, and patches Discord with Vencord. It also installs the git hooks in `~\.config\git\hooks`, which the git config uses for every repo: pre-push checks for
 secrets and Claude attribution before a push, commit-msg checks each commit message (format,
 no em dash, no Claude attribution).
 
-Both scripts are safe to run again. Run `install.ps1` again after a Discord update, which undoes
-the Vencord patch.
+Both scripts are safe to run again. Run `vc` (a function in the PowerShell profile) after a Discord
+update, which undoes the Vencord patch. VS Code extensions are not installed here: they come back
+with VS Code's own settings sync.
 
 ## 5. Sign in to the rest
 
@@ -145,24 +144,7 @@ In `gh auth login` pick GitHub.com, SSH, **Skip** the key upload (`id_ed25519_gi
 on the account), and log in with the browser. Sign in to Brave and Discord too if you use their sync, there is nothing to script for
 either.
 
-## 6. Restore your own files
-
-Robocopy only copies what is missing or changed, so these are safe to run more than once.
-
-```powershell
-foreach ($d in 'business', 'personal', 'university') {
-    robocopy "$backup\$d" "$HOME\files\$d" /E /COPY:DAT /DCOPY:DAT /MT:8
-}
-robocopy "$backup\games\emulators" "C:\Games\Emulators" /E /COPY:DAT /DCOPY:DAT /MT:8
-```
-
-`security` (account recovery codes and the like) stays on the backup drive only. Projects come
-back by cloning them from GitHub into the matching folder of `C:\dev` (`code` or `euxora`).
-
-Reinstall Steam and Riot into `C:\Games\Steam` and `C:\Games\Riot Games` directly, a file copy
-doesn't restore a game library properly.
-
-## 7. Optional: SSH into this PC from the other machines
+## 6. Optional: SSH into this PC from the other machines
 
 Windows has no SSH server by default. From an **admin** PowerShell:
 
@@ -174,7 +156,7 @@ It installs OpenSSH Server (several silent minutes on the first step), allows po
 Tailscale addresses (`100.64.0.0/10`), makes PowerShell 7 the login shell and authorizes sao's
 key, so `ssh atlas` from sao gets in without a password.
 
-## 8. Verify
+## 7. Verify
 
 DNS first: no IPv6 DNS servers, and a lookup of a name nobody asked for before (so the cache
 cannot hide anything) well under 1000 ms:
@@ -198,6 +180,10 @@ added as a signing key in your GitHub account settings, which is a setting on Gi
 not something restored by any file here.
 
 ## What is intentionally not backed up
+
+Your own files (`~\files`) and games (`C:\Games`) are restored by hand, these scripts never copy
+them. Projects come back by cloning them from GitHub into the matching folder of `C:\dev` (`code`
+or `euxora`).
 
 SSH private keys never go into any git repository, only into `credentials\.ssh` on the backup
 drive, restored by copy in step 3. GitHub CLI and Tailscale tokens are not stored anywhere, they

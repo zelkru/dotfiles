@@ -7,7 +7,7 @@ Alacritty's default palette) and `IosevkaTerm Nerd Font Mono`.
 |---|---|---|
 | Windows 10 / 11 | [`windows/`](windows) | Windows Terminal, PowerShell 7, Starship, fastfetch, Git, VS Code. See [`windows/README.md`](windows/README.md), and [`windows/SETUP.md`](windows/SETUP.md) for a full reinstall |
 | Linux Mint (Cinnamon) | [`linux/`](linux) | Alacritty, zellij, fish, Starship, rofi, riced Cinnamon. See [`linux/README.md`](linux/README.md) |
-| Both | [`shared/`](shared) | Starship prompt, global gitignore, mise tools, VS Code settings and extensions |
+| Both | [`shared/`](shared) | Starship prompt, global gitignore, mise tools, VS Code settings |
 
 `hooks/` (`pre-push`, `commit-msg`) is shared too and works on both.
 
@@ -39,13 +39,9 @@ Linux:
 ./linux/install.sh --collect  # system -> repo (after editing configs live)
 ```
 
-Then on either system, enable the git hooks (secret check, commit message check) once:
-
-```
-git config core.hooksPath hooks
-```
-
-(`linux/install.sh` already does it.)
+Both installers enable the git hooks (secret check, commit message check). `linux/install.sh` sets
+`core.hooksPath` for this repo; `windows/install.ps1` installs them in `~\.config\git\hooks`, and the
+git config points there, so they run in every repo.
 
 ## What is shared and what is not
 
@@ -54,7 +50,7 @@ git config core.hooksPath hooks
 | `starship.toml` (one prompt everywhere) | terminal and multiplexer config |
 | `git/ignore` (global gitignore) | `git/config` (`autocrlf`, credential helper differ) |
 | `mise/config.toml` (node, java, python, pnpm, fzf) | shell config, package installs, desktop |
-| `vscode/` (settings, extensions) | |
+| `vscode/` (settings) | |
 
 ## Safety
 

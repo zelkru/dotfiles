@@ -10,6 +10,7 @@
 	editor = code --wait
 	autocrlf = true
 	longpaths = true
+	hooksPath = ~/.config/git/hooks
 
 [pull]
 	rebase = true

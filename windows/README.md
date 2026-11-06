@@ -15,7 +15,6 @@ cd C:\dev\config\dotfiles
 pwsh ./windows/packages/install-packages.ps1   # new PC only: programs, font, VS Code context menu
 pwsh ./windows/install.ps1                     # repo -> system
 pwsh ./windows/install.ps1 -Collect            # system -> repo, after editing configs live
-git config core.hooksPath hooks                # enable the git hooks once
 ```
 
 Both scripts are safe to run again. After `install-packages.ps1`, open a new terminal so `code`,
@@ -34,13 +33,14 @@ What `install.ps1` does:
 
 1. Creates the [`C:\dev` folders](#dev-folder).
 2. Copies the configs listed below into place.
-3. Installs the VS Code extensions in `shared/vscode/extensions.txt`.
-4. Adds mise's shims folder (`%LOCALAPPDATA%\mise\shims`) to the user PATH and runs `mise install`
+3. Adds mise's shims folder (`%LOCALAPPDATA%\mise\shims`) to the user PATH and runs `mise install`
    (node, java, python, pnpm, fzf).
-5. Clones [`ash-theme`](https://github.com/zeldxh/ash-theme) next to this repo, in
+4. Clones [`ash-theme`](https://github.com/zeldxh/ash-theme) next to this repo, in
    `C:\dev\config\ash-theme` (same owner as `origin`), and installs the VS Code theme.
-6. Turns off Docker Desktop's start with Windows.
-7. Patches Discord with Vencord (run it again after a Discord update, which undoes the patch).
+5. Turns off Docker Desktop's start with Windows.
+6. Patches Discord with Vencord (run `vc` after a Discord update, which undoes the patch).
+
+VS Code extensions are not installed by the scripts: they come back with VS Code's own settings sync.
 
 With `-Collect` only step 2 runs, in the other direction.
 
@@ -60,13 +60,14 @@ Projects live in `C:\dev`, one folder per kind of project (the `dev` command jum
 |---|---|
 | `config/fastfetch` | `~\.config\fastfetch` |
 | `config/git/config` | `~\.config\git\config` (the global ignore comes from `shared/git/ignore`) |
+| `hooks/` (repo root) | `~\.config\git\hooks`, used by every repo: the git config sets `core.hooksPath` to it |
 | `config/powershell` | `~\.config\powershell` (the real profile) |
 | `powershell/profile-stub.ps1` | `~\Documents\PowerShell\Microsoft.PowerShell_profile.ps1` (only dot-sources the real profile) |
 | `windows-terminal/settings.json` | Windows Terminal's `LocalState\settings.json` |
 | `packages/` | not copied, it runs winget and the font / context menu scripts |
 
 `shared/` is used as well: `starship.toml`, the global gitignore, the mise tool list and the
-VS Code settings and extensions.
+VS Code settings.
 
 ## Keybindings
 
@@ -96,8 +97,9 @@ so the real file lives with the other configs and is easy to collect. It sets up
 
 - Starship (config from `~\.config\starship.toml`), zoxide and Terminal-Icons, each only if installed.
 - Aliases and functions: `ff` (fastfetch), `7z` (7-Zip), `dev` (go to `C:\dev`), `fp` (open the current folder, or `fp <folder>`, in File Pilot), `code` (with no
-  arguments go to `C:\dev\code`; with arguments it is still VS Code's `code`) and `ep` (edit the
-  profile with `$env:EDITOR`, else VS Code, else Notepad).
+  arguments go to `C:\dev\code`; with arguments it is still VS Code's `code`) `ep` (edit the
+  profile with `$env:EDITOR`, else VS Code, else Notepad) and `vc` (patch Discord with Vencord,
+  run it again after each Discord update).
 - Syntax colors as you type, from the same palette as the VS Code theme, and history suggestions.
 - `TELEMETRY_ENABLED=false`, so `docker agent` does not send telemetry.
 - A fix for SSH logins: sshd starts pwsh without `-NoLogo`, so the banner is erased (skipped for
@@ -139,8 +141,8 @@ in the repo (`hooks/pre-push` blocks them); they are restored from the backup dr
 ## Troubleshooting
 
 - **`code` or `mise` not found right after installing**: open a new terminal so PATH refreshes,
-  then run `install.ps1` again (it skips the VS Code extensions and mise tools when they are missing).
-- **Discord lost its Vencord patch**: Discord updated itself, run `install.ps1` again.
+  then run `install.ps1` again (it skips the mise tools when they are missing).
+- **Discord lost its Vencord patch**: Discord updated itself, run `vc`.
 - **Icons look like empty boxes**: the terminal is not using `IosevkaTerm Nerd Font Mono`, run
   `packages/install-font.ps1` and open a new window.
 - **A tool installed by mise is not found**: `mise doctor` should end with `No problems found`

@@ -25,6 +25,7 @@ $map = [ordered]@{
     'windows\config\git\euxora'                 = "$HOME\.config\git\euxora"
     'windows\config\git\allowed_signers'        = "$HOME\.config\git\allowed_signers"
     'shared\git\ignore'                          = "$HOME\.config\git\ignore"
+    'hooks'                                      = "$HOME\.config\git\hooks"
     'shared\mise'                                 = "$HOME\.config\mise"
     'windows\config\powershell'                  = "$HOME\.config\powershell"
     'shared\starship.toml'                        = "$HOME\.config\starship.toml"
@@ -32,10 +33,6 @@ $map = [ordered]@{
     'shared\vscode\settings.json'                = "$env:APPDATA\Code\User\settings.json"
 }
 if ($wtDir) { $map['windows\windows-terminal\settings.json'] = "$wtDir\LocalState\settings.json" }
-
-if (Get-Command code -ErrorAction SilentlyContinue) {
-    Get-Content (Join-Path $root 'shared\vscode\extensions.txt') | ForEach-Object { code --install-extension $_ }
-}
 
 foreach ($rel in $map.Keys) {
     $repo = Join-Path $root $rel
@@ -94,7 +91,8 @@ if (-not $Collect -and (Test-Path "$env:ProgramFiles\Docker\Docker\Docker Deskto
 }
 
 # Vencord: patch Discord with the official installer CLI. Safe to re-run (it re-patches with the
-# latest build), and needed after Discord updates itself, which undoes the patch.
+# latest build), and needed after Discord updates itself, which undoes the patch. The `vc` function
+# in the PowerShell profile does the same on demand.
 if (-not $Collect) {
     if (Test-Path "$env:LOCALAPPDATA\Discord") {
         $cli = Join-Path $env:TEMP 'VencordInstallerCli.exe'

@@ -55,6 +55,16 @@ function fp {
     Start-Process "$env:LOCALAPPDATA\Voidstar\FilePilot\FPilot.exe" -ArgumentList "`"$($full.ProviderPath)`""
 }
 
+# vc: patch Discord with Vencord's official installer CLI. Run it again after Discord updates itself,
+# which undoes the patch
+function vc {
+    if (-not (Test-Path "$env:LOCALAPPDATA\Discord")) { Write-Warning 'vc: Discord is not installed.'; return }
+    $cli = Join-Path $env:TEMP 'VencordInstallerCli.exe'
+    Invoke-WebRequest 'https://github.com/Vencord/Installer/releases/latest/download/VencordInstallerCli.exe' -OutFile $cli
+    & $cli -install -branch auto
+    Remove-Item $cli -ErrorAction SilentlyContinue
+}
+
 # 7z: alias for 7-Zip
 Set-Alias 7z "C:\Program Files\7-Zip\7z.exe"
 # Syntax colors as you type (same palette as the VS Code theme) and history suggestions
