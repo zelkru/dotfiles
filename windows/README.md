@@ -10,7 +10,7 @@ follow [`SETUP.md`](SETUP.md). This file explains what is in the folder and how 
 ## Install
 
 ```powershell
-git clone git@github.com:zeldxh/dotfiles.git C:\dev\config\dotfiles
+git clone git@github.com:zelkru/dotfiles.git C:\dev\config\dotfiles
 cd C:\dev\config\dotfiles
 pwsh ./windows/packages/install-packages.ps1   # new PC only: programs, font, VS Code context menu
 pwsh ./windows/install.ps1                     # repo -> system
@@ -35,7 +35,7 @@ What `install.ps1` does:
 2. Copies the configs listed below into place.
 3. Adds mise's shims folder (`%LOCALAPPDATA%\mise\shims`) to the user PATH and runs `mise install`
    (node, java, python, pnpm, fzf).
-4. Clones [`ash-theme`](https://github.com/zeldxh/ash-theme) next to this repo, in
+4. Clones [`ash-theme`](https://github.com/zelkru/ash-theme) next to this repo, in
    `C:\dev\config\ash-theme` (same owner as `origin`), and installs the VS Code theme.
 5. Turns off Docker Desktop's start with Windows.
 6. Patches Discord with Vencord (run `vc` after a Discord update, which undoes the patch).

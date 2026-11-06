@@ -7,7 +7,7 @@ different tools (see [what differs from Windows](#what-differs-from-windows)).
 ## Install
 
 ```bash
-git clone git@github.com:zeldxh/dotfiles.git ~/projects/dotfiles
+git clone git@github.com:zelkru/dotfiles.git ~/projects/dotfiles
 cd ~/projects/dotfiles/linux
 ./install.sh             # repo -> system (asks for sudo once, for apt)
 ./install.sh --no-apt    # same, without the apt step
@@ -24,7 +24,7 @@ What `install.sh` does, in order:
    shared tools (node, java, python, pnpm, fzf).
 3. Downloads IosevkaTerm Nerd Font Mono (Regular, Bold, Italic, Bold Italic) into `~/.local/share/fonts`.
 4. Copies the configs and scripts listed below, installs the Ash VS Code theme from
-   [`ash-theme`](https://github.com/zeldxh/ash-theme), and patches Discord with Vencord (needs
+   [`ash-theme`](https://github.com/zelkru/ash-theme), and patches Discord with Vencord (needs
    sudo, skipped with `--no-apt`; run it again after a Discord update, which undoes the patch).
 5. Downloads the zjstatus plugin for zellij and pre-grants its permissions.
 6. Adds a snippet to `~/.bashrc` that starts fish (bash stays the login shell).
@@ -128,7 +128,7 @@ gh auth login                                              # SSH, upload the key
 gh auth refresh -h github.com -s admin:ssh_signing_key     # permission to add signing keys
 gh ssh-key add ~/.ssh/id_ed25519_github.pub --type signing --title "Mint (signing)"
 echo "783613+zeldxh@users.noreply.github.com $(cut -d' ' -f1,2 ~/.ssh/id_ed25519_github.pub)" > ~/.ssh/allowed_signers
-ssh -T git@github.com                                      # "Hi zeldxh!"
+ssh -T git@github.com                                      # "Hi zelkru!"
 ```
 
 `gh auth login` already uploads the key as an authentication key; the signing key is a separate
