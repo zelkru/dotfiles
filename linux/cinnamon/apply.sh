@@ -36,6 +36,11 @@ gs org.gnome.desktop.interface monospace-font-name "$font 13"
 gs org.nemo.desktop font "$font 12"
 gs org.cinnamon.desktop.wm.preferences titlebar-font "$font 12"
 
+# --- GTK theme, icons and cursor ----------------------------------------------------------------
+gs org.cinnamon.desktop.interface gtk-theme "$base_theme"
+gs org.cinnamon.desktop.interface icon-theme 'Mint-Y-Red'
+gs org.cinnamon.desktop.interface cursor-theme 'Bibata-Modern-Classic'
+
 # --- Default terminal ---------------------------------------------------------------------------
 gs org.cinnamon.desktop.default-applications.terminal exec alacritty
 

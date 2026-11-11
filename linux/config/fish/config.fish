@@ -1,4 +1,9 @@
 if status is-interactive
+    # Over SSH the client's TERM may have no terminfo here (COLORTERM is not forwarded either)
+    if set -q SSH_CONNECTION
+        infocmp $TERM >/dev/null 2>&1; or set -gx TERM xterm-256color
+        set -q COLORTERM; or set -gx COLORTERM truecolor
+    end
     set -g fish_greeting
     fish_add_path ~/.local/bin
 
