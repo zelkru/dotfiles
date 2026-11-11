@@ -123,11 +123,11 @@ to a shell function: it swallows every keypress.
 Each machine has **its own** key: do not copy the Windows key, add a second one to GitHub.
 
 ```bash
-ssh-keygen -t ed25519 -C "783613+zeldxh@users.noreply.github.com" -f ~/.ssh/id_ed25519_github
+ssh-keygen -t ed25519 -C "783613+zelkru@users.noreply.github.com" -f ~/.ssh/id_ed25519_github
 gh auth login                                              # SSH, upload the key when asked
 gh auth refresh -h github.com -s admin:ssh_signing_key     # permission to add signing keys
 gh ssh-key add ~/.ssh/id_ed25519_github.pub --type signing --title "Mint (signing)"
-echo "783613+zeldxh@users.noreply.github.com $(cut -d' ' -f1,2 ~/.ssh/id_ed25519_github.pub)" > ~/.ssh/allowed_signers
+echo "783613+zelkru@users.noreply.github.com $(cut -d' ' -f1,2 ~/.ssh/id_ed25519_github.pub)" > ~/.ssh/allowed_signers
 ssh -T git@github.com                                      # "Hi zelkru!"
 ```
 
