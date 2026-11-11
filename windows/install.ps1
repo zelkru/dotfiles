@@ -97,7 +97,16 @@ if (-not $Collect) {
     if (Test-Path "$env:LOCALAPPDATA\Discord") {
         $cli = Join-Path $env:TEMP 'VencordInstallerCli.exe'
         Invoke-WebRequest 'https://github.com/Vencord/Installer/releases/latest/download/VencordInstallerCli.exe' -OutFile $cli
-        & $cli -install -branch auto
+        $root = "$env:LOCALAPPDATA\Discord"
+        Get-Process Discord -ErrorAction SilentlyContinue | Stop-Process -Force
+        # The installer only patches the newest app-* folder, but Discord can keep launching an older
+        # one. Patch every app-* folder by hiding the others while each one is patched.
+        $apps = @(Get-ChildItem $root -Directory -Filter 'app-*')
+        foreach ($app in $apps) {
+            $held = @($apps | Where-Object FullName -ne $app.FullName | ForEach-Object { Rename-Item $_.FullName "_hold-$($_.Name)" -PassThru })
+            try { & $cli -install -location $root }
+            finally { $held | ForEach-Object { Rename-Item $_.FullName ($_.Name -replace '^_hold-', '') } }
+        }
         Remove-Item $cli -ErrorAction SilentlyContinue
     } else {
         Write-Warning 'Discord is not installed, skipping Vencord.'
