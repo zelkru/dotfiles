@@ -12,7 +12,7 @@ C:\dev\
   euxora\       business projects; client projects go in euxora\clients
 ```
 
-Personal files live in `~\files`, not `Documents`, which programs fill with their own folders.
+Personal files live in `~\personal`, not `Documents`, which programs fill with their own folders.
 
 Every block below is plain PowerShell, copy and paste it straight into a terminal. Most steps
 check first and skip anything already in place, so it is fine to run a step again.
@@ -181,7 +181,7 @@ not something restored by any file here.
 
 ## What is intentionally not backed up
 
-Your own files (`~\files`) and games (`C:\Games`) are restored by hand, these scripts never copy
+Your own files (`~\personal`) are restored by hand, these scripts never copy
 them. Projects come back by cloning them from GitHub into the matching folder of `C:\dev` (`code`
 or `euxora`).
 
