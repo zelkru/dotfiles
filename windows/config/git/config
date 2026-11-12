@@ -30,9 +30,6 @@
 [gpg "ssh"]
 	allowedSignersFile = ~/.config/git/allowed_signers
 
-[includeIf "gitdir/i:C:/dev/euxora/"]
-	path = ~/.config/git/euxora
-
 [commit]
 	gpgsign = true
 [credential "https://github.com"]

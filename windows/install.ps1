@@ -10,7 +10,7 @@ $root = Split-Path $PSScriptRoot -Parent
 
 # Dev folder layout: one folder per kind of project. config\ holds this repo and ash-theme.
 if (-not $Collect) {
-    foreach ($d in 'config', 'code', 'euxora') {
+    foreach ($d in 'config', 'code') {
         New-Item -ItemType Directory -Force "C:\dev\$d" | Out-Null
     }
 }
@@ -22,7 +22,6 @@ $wtDir = Get-ChildItem "$env:LOCALAPPDATA\Packages" -Directory -Filter "Microsof
 $map = [ordered]@{
     'windows\config\fastfetch'                   = "$HOME\.config\fastfetch"
     'windows\config\git\config'                 = "$HOME\.config\git\config"
-    'shared\git\euxora'                          = "$HOME\.config\git\euxora"
     'shared\git\allowed_signers'                 = "$HOME\.config\git\allowed_signers"
     'shared\git\ignore'                          = "$HOME\.config\git\ignore"
     'hooks'                                      = "$HOME\.config\git\hooks"

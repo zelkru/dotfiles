@@ -52,7 +52,6 @@ Projects live in `C:\dev`, one folder per kind of project (the `dev` command jum
 |---|---|
 | `config` | this repo (`config\dotfiles`) and `config\ash-theme` |
 | `code` | personal projects |
-| `euxora` | business projects (client projects go in `euxora\clients`) |
 
 ## Layout
 

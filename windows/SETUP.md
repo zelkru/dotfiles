@@ -9,7 +9,6 @@ Projects live in `C:\dev`, one folder per kind of project. The `dev` shell short
 C:\dev\
   config\       this repo (config\dotfiles) and ash-theme (config\ash-theme)
   code\         personal projects
-  euxora\       business projects; client projects go in euxora\clients
 ```
 
 Personal files live in `~\personal`, not `Documents`, which programs fill with their own folders.
@@ -182,8 +181,7 @@ not something restored by any file here.
 ## What is intentionally not backed up
 
 Your own files (`~\personal`) are restored by hand, these scripts never copy
-them. Projects come back by cloning them from GitHub into the matching folder of `C:\dev` (`code`
-or `euxora`).
+them. Projects come back by cloning them from GitHub into the matching folder of `C:\dev` (`code`).
 
 SSH private keys never go into any git repository, only into `credentials\.ssh` on the backup
 drive, restored by copy in step 3. GitHub CLI and Tailscale tokens are not stored anywhere, they
