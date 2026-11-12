@@ -11,7 +11,7 @@ C:\dev\
   code\         personal projects
 ```
 
-Personal files live in `~\personal`, not `Documents`, which programs fill with their own folders.
+Personal files live in `D:\personal` (the second drive, so a Windows reinstall does not touch them), not in `Documents`, which programs fill with their own folders.
 
 Every block below is plain PowerShell, copy and paste it straight into a terminal. Most steps
 check first and skip anything already in place, so it is fine to run a step again.
@@ -180,8 +180,8 @@ not something restored by any file here.
 
 ## What is intentionally not backed up
 
-Your own files (`~\personal`) are restored by hand, these scripts never copy
-them. Projects come back by cloning them from GitHub into the matching folder of `C:\dev` (`code`).
+Your own files (`D:\personal`) are not on the OS drive, so reinstalling Windows leaves them alone (just do not
+select that drive in the installer). These scripts never copy them. Projects come back by cloning them from GitHub into the matching folder of `C:\dev` (`code`).
 
 SSH private keys never go into any git repository, only into `credentials\.ssh` on the backup
 drive, restored by copy in step 3. GitHub CLI and Tailscale tokens are not stored anywhere, they
