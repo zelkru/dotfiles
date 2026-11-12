@@ -61,6 +61,13 @@ fi
 # --- 1. Programs (needs sudo) -------------------------------------------------------------------
 if [ "$apt" = 1 ]; then
     sudo apt install -y alacritty kitty fish rofi gh git zoxide xsel wmctrl curl unzip
+
+    # Laptops whose firmware allows it: stop charging at 80% (see linux/system/battery-charge-limit.service)
+    if [ -e /sys/class/power_supply/BAT0/charge_control_end_threshold ]; then
+        sudo install -m 644 "$here/system/battery-charge-limit.service" /etc/systemd/system/battery-charge-limit.service
+        sudo systemctl daemon-reload
+        sudo systemctl enable --now battery-charge-limit.service
+    fi
 fi
 
 # --- 2. mise tools (starship, fastfetch, zellij, plus shared/mise: node, java, python...) --------

@@ -1,0 +1,16 @@
+# Keeps the laptop battery between 75% and 80% to slow its wear when it lives plugged in.
+# Dell laptops expose this through the kernel (dell-laptop): "Custom" mode plus a start and a stop
+# threshold. The stop value is written first because the firmware needs stop > start.
+# To change the limits, edit the two numbers below, then: sudo systemctl restart battery-charge-limit
+# For a full charge before a trip: echo Standard | sudo tee /sys/class/power_supply/BAT0/charge_types
+[Unit]
+Description=Limit battery charge to 75-80%
+ConditionPathExists=/sys/class/power_supply/BAT0/charge_control_end_threshold
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c 'b=/sys/class/power_supply/BAT0; echo Custom > $b/charge_types; echo 80 > $b/charge_control_end_threshold; echo 75 > $b/charge_control_start_threshold'
+
+[Install]
+WantedBy=multi-user.target

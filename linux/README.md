@@ -44,6 +44,7 @@ creates the applet settings files after an applet has loaded once.
 | `bin/` | `~/.local/bin/` |
 | `applications/power-menu.desktop` | `~/.local/share/applications/` (launcher behind the top bar's power button) |
 | `autostart/focus-new-windows.desktop` | `~/.config/autostart/` |
+| `system/battery-charge-limit.service` | `/etc/systemd/system/` (needs sudo, only on laptops whose firmware allows it): keeps the battery between 75% and 80%. For a full charge before a trip: `echo Standard \| sudo tee /sys/class/power_supply/BAT0/charge_types` |
 | `cinnamon/ash.css` | appended to a copy of the Mint-Y-Dark-Red Cinnamon theme, installed as `~/.themes/Ash` |
 | `cinnamon/apply.sh` | not copied, it runs `gsettings` / `dbus` |
 
