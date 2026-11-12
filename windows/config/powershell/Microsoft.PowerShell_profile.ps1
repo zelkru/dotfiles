@@ -55,6 +55,24 @@ function fp {
     Start-Process "$env:LOCALAPPDATA\Voidstar\FilePilot\FPilot.exe" -ArgumentList "`"$($full.ProviderPath)`""
 }
 
+# sv: tunnel ports from sao to this PC, so a dev server running on sao opens at http://localhost:<port>.
+#   sv 3000            sao:3000 -> localhost:3000
+#   sv 3000 5173       several ports at once
+#   sv 8080:3000       sao:3000 -> localhost:8080 (local:remote, when the local port is taken)
+# Ctrl+C closes the tunnel. This replaces PowerShell's built-in `sv` alias for Set-Variable.
+Remove-Item Alias:sv -Force -ErrorAction SilentlyContinue
+function sv {
+    param([Parameter(Mandatory, ValueFromRemainingArguments)][string[]]$Ports)
+    $forwards = foreach ($p in $Ports) {
+        if ($p -notmatch '^(\d{1,5}:)?\d{1,5}$') { Write-Error "sv: '$p' is not a port (use 3000 or 8080:3000)"; return }
+        $local, $remote = if ($p -match ':') { $p -split ':' } else { $p, $p }
+        Write-Host "sao:$remote -> http://localhost:$local"
+        '-L'; "${local}:localhost:${remote}"
+    }
+    Write-Host 'Ctrl+C to close the tunnel'
+    ssh -N -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 @forwards sao
+}
+
 # vc: patch Discord with Vencord's official installer CLI. Run it again after Discord updates itself,
 # which undoes the patch
 function vc {
