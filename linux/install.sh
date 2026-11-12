@@ -30,6 +30,8 @@ declare -a MAP=(
     "linux/config/rofi/config.rasi|$HOME/.config/rofi/config.rasi"
     "linux/config/git/config|$HOME/.config/git/config"
     "shared/git/ignore|$HOME/.config/git/ignore"
+    "shared/git/euxora|$HOME/.config/git/euxora"
+    "shared/git/allowed_signers|$HOME/.config/git/allowed_signers"
     "shared/starship.toml|$HOME/.config/starship.toml"
     "linux/config/fastfetch/config.jsonc|$HOME/.config/fastfetch/config.jsonc"
     "linux/config/fastfetch/logo.txt|$HOME/.config/fastfetch/logo.txt"
@@ -90,9 +92,12 @@ for entry in "${MAP[@]}"; do
 done
 fc-cache -f
 
-# ssh config and global git hooks path are only created when missing / for this repo
+# ssh config is only created when missing; the git hooks are global (core.hooksPath in git/config)
 [ -f "$HOME/.ssh/config" ] || { mkdir -p "$HOME/.ssh"; chmod 700 "$HOME/.ssh"; copy_in "$here/config/ssh_config" "$HOME/.ssh/config"; chmod 600 "$HOME/.ssh/config"; }
-git -C "$root" config core.hooksPath hooks
+mkdir -p "$HOME/.config/git/hooks"
+cp "$root"/hooks/* "$HOME/.config/git/hooks/"
+chmod +x "$HOME/.config/git/hooks/"*
+git -C "$root" config --unset core.hooksPath 2>/dev/null || true   # the global hooks path (git/config) covers every repo
 
 # mise tools after the config is in place
 [ -n "$m" ] && "$m" install

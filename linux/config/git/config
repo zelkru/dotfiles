@@ -9,6 +9,7 @@
 [core]
 	editor = code --wait
 	autocrlf = input
+	hooksPath = ~/.config/git/hooks
 
 [pull]
 	rebase = true
@@ -26,7 +27,10 @@
 	format = ssh
 
 [gpg "ssh"]
-	allowedSignersFile = ~/.ssh/allowed_signers
+	allowedSignersFile = ~/.config/git/allowed_signers
+
+[includeIf "gitdir/i:~/dev/euxora/"]
+	path = ~/.config/git/euxora
 
 [commit]
 	gpgsign = true

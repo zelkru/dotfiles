@@ -4,3 +4,15 @@ Host github.com
     IdentityFile ~/.ssh/id_ed25519_github
     IdentitiesOnly yes
     AddKeysToAgent yes
+
+Host royal
+    HostName 100.126.170.1
+    User andrew
+    IdentityFile ~/.ssh/royalclean_vps
+    IdentitiesOnly yes
+
+Host moon
+    HostName 100.103.9.104
+    User zel
+    IdentityFile ~/.ssh/moon_server
+    IdentitiesOnly yes
