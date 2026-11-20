@@ -55,14 +55,12 @@ function fp {
     Start-Process "$env:LOCALAPPDATA\Voidstar\FilePilot\FPilot.exe" -ArgumentList "`"$($full.ProviderPath)`""
 }
 
-# sv: tunnel ports from sao to this PC, so a dev server running on sao opens at http://localhost:<port>.
-#   sv 3000            sao:3000 -> localhost:3000
-#   sv 3000 5173       several ports at once
-#   sv 8080:3000       sao:3000 -> localhost:8080 (local:remote, when the local port is taken)
-# Ctrl+C closes the tunnel. `sv --help` explains everything. This replaces PowerShell's built-in
-# `sv` alias for Set-Variable.
-Remove-Item Alias:sv -Force -ErrorAction SilentlyContinue
-function sv {
+# tun: tunnel ports from sao to this PC, so a dev server running on sao opens at http://localhost:<port>.
+#   tun 3000            sao:3000 -> localhost:3000
+#   tun 3000 5173       several ports at once
+#   tun 8080:3000       sao:3000 -> localhost:8080 (local:remote, when the local port is taken)
+# Ctrl+C closes the tunnel. `tun --help` explains everything.
+function tun {
     param(
         [Alias('h')][switch]$Help,
         [Parameter(ValueFromRemainingArguments)][string[]]$Ports
@@ -70,18 +68,18 @@ function sv {
     if ($Help -or -not $Ports -or $Ports -contains '--help' -or $Ports -contains 'help' -or $Ports -contains '/?') {
         Write-Host @'
 
-sv: open a tunnel from the sao laptop to this PC
+tun: open a tunnel from the sao laptop to this PC
 
 USAGE
-  sv <port> [<port> ...]
-  sv <local>:<remote> [...]
-  sv --help            (also: sv -h, sv help, or sv with no arguments)
+  tun <port> [<port> ...]
+  tun <local>:<remote> [...]
+  tun --help            (also: tun -h, tun help, or tun with no arguments)
 
 EXAMPLES
-  sv 3000              sao:3000 becomes http://localhost:3000 on this PC
-  sv 3000 5173         two tunnels at once (for example an API and a front end)
-  sv 8080:3000         sao:3000 becomes http://localhost:8080 (use it when 3000 is busy here)
-  sv 5432              any TCP port works, not only web servers (a database, for example)
+  tun 3000              sao:3000 becomes http://localhost:3000 on this PC
+  tun 3000 5173         two tunnels at once (for example an API and a front end)
+  tun 8080:3000         sao:3000 becomes http://localhost:8080 (use it when 3000 is busy here)
+  tun 5432              any TCP port works, not only web servers (a database, for example)
 
 PORT SYNTAX
   3000        same number on both sides
@@ -110,41 +108,35 @@ THE TERMINAL STAYS BUSY
 THE TUNNEL DIES WHEN
   - You press Ctrl+C or close the terminal.
   - sao suspends (it does on battery after 15 minutes or when the lid closes; on the charger it
-    never does) or loses the network. Run sv again once it is back.
+    never does) or loses the network. Run tun again once it is back.
   - Tailscale is off on this PC.
 
 COMMON ERRORS
   "bind [127.0.0.1]:3000: Address already in use"
       Something on this PC already uses that local port (maybe a dev server of your own, or a
-      tunnel left open). Pick another local port: sv 8080:3000
+      tunnel left open). Pick another local port: tun 8080:3000
   Page does not load and the ssh window shows "connect failed: Connection refused"
       The tunnel is fine but nothing is listening on that port on sao. Start the server there,
       and check it uses the port you gave. A server that listens on another interface only
       (for example the sao LAN address) is not reached through "localhost".
   "Permission denied (publickey)" or "Could not resolve hostname sao"
       Tailscale is off, or sao is asleep or off. Check: ssh sao
-  "sv: 'abc' is not a port"
+  "tun: 'abc' is not a port"
       The argument is not 3000 or 8080:3000.
 
 WHEN YOU DO NOT NEED IT
   - VS Code with Remote-SSH forwards ports by itself (Ports tab), including the ones a dev server
     announces in its terminal.
   - Claude Desktop in an SSH session has no browser pane for your app, so start the server on sao
-    and use sv to open it in your own browser.
-
-ABOUT THE NAME
-  PowerShell already has a built-in alias called sv for Set-Variable. Aliases win over functions,
-  so this profile removes that alias on startup (Remove-Item Alias:sv) to make room for this one.
-  Nothing else changes: Set-Variable and its other alias, set, still work. To get the old sv back
-  in one window:  Remove-Item Function:sv; Set-Alias sv Set-Variable
+    and use tun to open it in your own browser.
 
 '@
         return
     }
     $forwards = foreach ($p in $Ports) {
-        if ($p -notmatch '^(\d{1,5}:)?\d{1,5}$') { Write-Error "sv: '$p' is not a port (use 3000 or 8080:3000). Try: sv --help"; return }
+        if ($p -notmatch '^(\d{1,5}:)?\d{1,5}$') { Write-Error "tun: '$p' is not a port (use 3000 or 8080:3000). Try: tun --help"; return }
         $local, $remote = if ($p -match ':') { $p -split ':' } else { $p, $p }
-        if (@($local, $remote) | Where-Object { [int]$_ -lt 1 -or [int]$_ -gt 65535 }) { Write-Error "sv: '$p' has a port outside 1-65535"; return }
+        if (@($local, $remote) | Where-Object { [int]$_ -lt 1 -or [int]$_ -gt 65535 }) { Write-Error "tun: '$p' has a port outside 1-65535"; return }
         Write-Host "sao:$remote -> http://localhost:$local"
         '-L'; "${local}:localhost:${remote}"
     }
