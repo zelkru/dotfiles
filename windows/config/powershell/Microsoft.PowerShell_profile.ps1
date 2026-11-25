@@ -145,6 +145,59 @@ WHEN YOU DO NOT NEED IT
     ssh -N -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 @forwards sao
 }
 
+# echo -n and base64, the way they behave in bash:
+#   echo "text" | base64        encodes "text" plus a newline (what bash does)
+#   echo -n "text" | base64     encodes "text" with no newline
+#   "dGV4dA==" | base64 -d      decodes (also --decode); the result prints like any text
+#   base64 file.txt             encodes a file; -w 0 turns off the 76 column wrapping
+# PowerShell's built-in `echo` alias is replaced so that `echo -n` can mark its output as "no
+# newline". Without -n, echo behaves exactly as before. Decoding assumes the data is UTF-8 text.
+Remove-Item Alias:echo -Force -ErrorAction SilentlyContinue
+function echo {
+    param([switch]$n, [Parameter(ValueFromRemainingArguments)][object[]]$Rest)
+    if (-not $n) { if ($Rest) { $Rest }; return }
+    $text = ($Rest | ForEach-Object { "$_" }) -join ' '
+    Add-Member -InputObject $text -NotePropertyName NoNewline -NotePropertyValue $true -PassThru
+}
+
+function base64 {
+    $decode = $false; $wrap = 76; $files = @()
+    for ($i = 0; $i -lt $args.Count; $i++) {
+        $a = "$($args[$i])"
+        if ($a -ceq '-d' -or $a -ceq '-D' -or $a -eq '--decode') { $decode = $true }
+        elseif ($a -eq '-w' -or $a -eq '--wrap') { $i++; $wrap = [int]"$($args[$i])" }
+        elseif ($a -match '^(-w|--wrap=)(\d+)$') { $wrap = [int]$Matches[2] }
+        else { $files += $a }
+    }
+    $utf8 = [Text.UTF8Encoding]::new($false)
+    if ($files) {
+        $raw = [IO.File]::ReadAllBytes((Resolve-Path -LiteralPath $files[0]).ProviderPath)
+        $text = [Text.Encoding]::ASCII.GetString($raw)
+    } else {
+        $sb = [Text.StringBuilder]::new()
+        foreach ($x in @($input)) {
+            [void]$sb.Append("$x")
+            # a piped string is a line (like piping to a native command), unless echo -n marked it
+            $bare = $null -ne $x -and $x.PSObject.Properties['NoNewline']
+            if (-not $decode -and -not $bare) { [void]$sb.Append("`n") }
+        }
+        $text = $sb.ToString()
+        $raw = $utf8.GetBytes($text)
+    }
+    if ($decode) {
+        try { $out = $utf8.GetString([Convert]::FromBase64String(($text -replace '\s', ''))) }
+        catch { Write-Error 'base64: invalid input'; return }
+        # the host adds one newline when printing, so drop the one the data ends with
+        if ($out.EndsWith("`r`n")) { $out = $out.Substring(0, $out.Length - 2) }
+        elseif ($out.EndsWith("`n")) { $out = $out.Substring(0, $out.Length - 1) }
+        $out
+    } else {
+        $b64 = [Convert]::ToBase64String($raw)
+        if ($wrap -le 0) { $b64 }
+        else { for ($p = 0; $p -lt $b64.Length; $p += $wrap) { $b64.Substring($p, [Math]::Min($wrap, $b64.Length - $p)) } }
+    }
+}
+
 # vc: patch Discord with Vencord's official installer CLI. Run it again after Discord updates itself,
 # which undoes the patch
 function vc {
